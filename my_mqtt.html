@@ -1,0 +1,96 @@
+<html>
+<meta charset="utf-8">
+<title>MY MQTT IS GOOD</title>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/paho-mqtt/1.0.1/mqttws31.js" type="text/javascript"></script>
+<script>
+    const TOPIC = "tw/iot/01";
+    const ClientId = "lens_XrSgCUlrz6hCTQCGtvXriTAuX";
+    var client = false;
+
+    // 用戶端成功連接 broker 時...
+    function onConnect() {
+        // 確認連接後，才能訂閱主題
+        console.log("onConnect then subscribe topic");
+        client.subscribe(TOPIC + "/#");
+    }
+
+    // 收到訊息時...
+    function onMessageArrived(message) {
+        console.log("onMessageArrived:" + message.payloadString);
+        document.getElementById("mqtt_monitor").innerHTML = message.payloadString;
+    }
+
+    // 發佈訊息
+    function publish_message() {
+        var input_text = document.getElementById("mqtt_text");
+        var payload = input_text.value;
+        var message = new Paho.MQTT.Message(payload);
+        message.destinationName = TOPIC + "/msg";
+        client.send(message);
+        input_text.value = '';
+    }
+
+    function init() {
+        document.getElementById("mqtt_pub").addEventListener('click', publish_message);
+        // 建立 MQTT 用戶端實體. 你必須正確寫上你設置的埠號.
+        // ClientId 可以自行指定，提供 MQTT broker 認證用
+        // client = new Paho.MQTT.Client("ws://iot.eclipse.org:80/ws", ClientId);
+        client = new Paho.MQTT.Client("wss://iot.eclipse.org:443/ws", ClientId);
+
+        // 指定收到訊息時的處理動作
+        client.onMessageArrived = onMessageArrived;
+
+        // 連接 MQTT broker
+        client.connect({ onSuccess: onConnect });
+    }
+
+    window.addEventListener('load', init, false);
+//document.addEventListener('DOMContentLoaded', init, false);
+</script>
+
+<body bgcolor="#d0d0d0">
+
+    <script>
+        function subtopic() {
+            client.subscribe("tw/iot/01");
+        }
+
+
+
+
+    </script>
+
+
+
+    <p>
+        <span style="font-size:2cm;">My MQTT</span><br><br>
+    </p>
+    <div>
+        主題:
+        <input type="text" id="textobject">
+        <button id="subobject" onclick="subtopic()">訂閱</button>
+    </div>
+    <hr>
+
+    <div>
+        主題:
+        <input type="text" id="TOP" />
+        <br>
+        <br>
+        訊息:
+        <input type="text" id="mqtt_text" />
+        <button id="mqtt_pub">推送</button>
+    </div>
+    <hr>
+
+    <div style="border:2px rgb(240, 0, 40) solid;padding:15px;text-align:center; font-size:24px;">
+        訊息列
+        <div id="mqtt_monitor" style="background-color:#FFD382;padding:10px;margin-bottom:5px;width:99%;height:120px;font-size:16px;">
+        </div>
+    </div>
+
+
+</body>
+
+</html>

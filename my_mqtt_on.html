@@ -1,0 +1,112 @@
+<html>
+<meta charset="utf-8">
+<title>MY MQTT IS GOOD</title>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/paho-mqtt/1.0.1/mqttws31.js" type="text/javascript"></script>
+
+<body bgcolor="#d0d0d0">
+
+    <script>
+
+        // Create a client instance
+        client = new Paho.MQTT.Client("wss://iot.eclipse.org:443/ws", "aaaccc");
+
+        // set callback handlers
+        client.onConnectionLost = onConnectionLost;
+        client.onMessageArrived = onMessageArrived;
+
+        // connect the client
+        client.connect({ onSuccess: onConnect });
+
+
+        // called when the client connects
+        function onConnect() {
+            // Once a connection has been made, make a subscription and send a message.
+            console.log("onConnect");
+            //client.subscribe("tw/iot/01");
+            //message = new Paho.MQTT.Message("Hello");
+            //message.destinationName = "tw/iot/01";
+            //client.send(message);
+        }
+
+        // called when the client loses its connection
+        function onConnectionLost(responseObject) {
+            if (responseObject.errorCode !== 0) {
+                console.log("onConnectionLost:" + responseObject.errorMessage);
+            }
+        }
+
+        // called when a message arrives
+        function onMessageArrived(message) {
+            console.log("onMessageArrived:" + message.payloadString);
+        }
+
+
+
+        function subtopic() {
+            var topic = document.getElementById("textobject").value;
+            client.subscribe(topic);
+            console.log(topic);
+        }
+
+        function pubic(){
+            var msg = document.getElementById("mqtt_text").value;
+            var topic = document.getElementById("TOP").value;
+
+            message = new Paho.MQTT.Message(msg);
+            message.destinationName = topic;
+            client.send(message);
+            
+        }
+
+        function onMessageArrived(message) {
+        document.getElementById("mqtt_monitor").innerHTML = message.payloadString;
+
+            function init() {
+        document.getElementById("mqtt_pub").addEventListener('click', publish_message);
+
+        // 指定收到訊息時的處理動作
+        client.onMessageArrived = onMessageArrived;
+
+        // 連接 MQTT broker
+        client.connect({ onSuccess: onConnect });
+    }
+
+    }
+
+
+
+    </script>
+
+
+
+    <p>
+        <span style="font-size:2cm;">My MQTT</span><br><br>
+    </p>
+    <div>
+        主題:
+        <input type="text" id="textobject">
+        <button id="subobject" onclick="subtopic()">訂閱</button>
+    </div>
+    <hr>
+
+    <div>
+        主題:
+        <input type="text" id="TOP" />
+        <br><br>
+        訊息:
+        <input type="text" id="mqtt_text" />
+        <button id="mqtt_pub" onclick="pubic()">推送</button>
+    </div>
+    <hr>
+
+    <div style="border:2px rgb(240, 0, 40) solid;padding:15px;text-align:center; font-size:24px;">
+        訊息列
+        <div id="mqtt_monitor" style="background-color:#FFD382;padding:10px;margin-bottom:5px;width:99%;height:120px;font-size:16px;">
+        </div>
+    </div>
+
+
+</body>
+
+</html>
