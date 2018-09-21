@@ -39,6 +39,8 @@
         // called when a message arrives
         function onMessageArrived(message) {
             console.log("onMessageArrived:" + message.payloadString);
+            var oppa =document.getElementById("mqtt_monitor")
+            oppa.innerHTML = message.payloadString + "<br>"+ oppa.innerHTML;
         }
 
 
@@ -59,20 +61,9 @@
             
         }
 
-        function onMessageArrived(message) {
-        document.getElementById("mqtt_monitor").innerHTML = message.payloadString;
+        
 
-            function init() {
-        document.getElementById("mqtt_pub").addEventListener('click', publish_message);
-
-        // 指定收到訊息時的處理動作
-        client.onMessageArrived = onMessageArrived;
-
-        // 連接 MQTT broker
-        client.connect({ onSuccess: onConnect });
-    }
-
-    }
+    
 
 
 
